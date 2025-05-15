@@ -1,0 +1,18 @@
+#######
+# Node Red Docker Compose
+# mostly from https://nodered.org/docs/getting-started/docker
+#######
+services:
+  node-red:
+    build: .
+    container_name: node-red-doug
+    #image: nodered/node-red:latest
+    environment:
+      - TZ=America/Detroit
+    ports:
+      - "1880:1880"
+    volumes:
+      - node-red-data:/data
+volumes:
+  node-red-data:
+  
