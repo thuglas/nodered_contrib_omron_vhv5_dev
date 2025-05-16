@@ -1,0 +1,76 @@
+const WebSocket = require('ws');
+const msgpack = require('msgpack-lite');
+
+module.exports = function(RED) {
+    function VHV5(config) {
+        RED.nodes.createNode(this, config);
+        this.ipAddress = config.ipAddress;
+        const node = this;
+        
+        const ws1 = new WebSocket('ws://192.168.250.19:9898/supv/events');
+        const ws2 = new WebSocket('ws://192.168.250.19:9003');
+        //const ws1 = new WebSocket('ws://${this.ipAddress}:9898/supv/events');
+        //const ws2 = new WebSocket('ws://${this.ipAddress}:9003');
+        
+        //This monitors the status messages
+        // send sysinfo to output 2
+        // send everything else (heartbeat & ???) to node output 3
+        ws1.on('message', function(data) {
+            const jdata = JSON.parse(data)
+            if (jdata.event=='sysinfo') {
+                node.send(  [null, 
+                            {topic: jdata.event, payload: jdata.data},
+                            null]);
+            } else {
+                node.send(  [null,
+                            null,
+                            {topic: jdata.event, payload: jdata.data}]);
+            }
+       });
+    
+        //This message contains the read report data...send it via the first node output
+        ws2.on('message', function(data) {
+            const decodedData = msgpack.decode(data);
+            node.send(  [{topic: decodedData.event.name, payload: decodedData.event.data}
+                        ,null
+                        ,null]);
+        });
+
+//        ws1.on('error', function(error) {
+//            node.error('Websocket 1 error: ${error.message}');
+//        });
+
+//        ws2.on('error', function(error) {
+//            node.error('Websocket 2 error: ${error.message}');
+//        });
+
+        this.on('close', function() {
+            ws1.close();
+            ws2.close();
+        });
+        
+
+    }
+    RED.nodes.registerType("vhv5", VHV5);
+    
+    function trig_once() {
+        const xhr = new XMLHttpRequest();
+        xhr.open("PUT", "http://192.168.250.19/api/control/trigger", true);
+        xhr.setRequestHeader("Content-Type","application/json");
+        xhr.send("");
+    }
+    
+    function trig_continuous_start(intervalms) {
+        const xhr = new XMLHttpRequest();
+        xhr.open("PUT", "http://192.168.250.19/api/control/trig_gen/1", true);
+        xhr.setRequestHeader("Content-Type","application/json");
+        xhr.send("");
+    }
+    function trig_continuous_stop() {
+        const xhr = new XMLHttpRequest();
+        xhr.open("PUT", "http://192.168.250.19/api/control/trig_gen/0", true);
+        xhr.setRequestHeader("Content-Type","application/json");
+        xhr.send("");
+    }
+
+};
