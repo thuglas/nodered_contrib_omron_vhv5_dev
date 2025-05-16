@@ -1,0 +1,51 @@
+<script type="text/html" data-template-name="vhv5">
+
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i><span data-il8n="node-red:common.label.name"></span></label>
+    <input type="text" id="node-input-name" data-il8n="[placeholder]node-red:common.label.name">
+  </div>
+  <div class="form-row">
+    <label for="node-input-ipAddress"><span data-il8n="vhv5.ipLabel"/></label>
+    <input type="text" id="node-input-ipAddress" placeholder="Enter IP Address" />
+  </div>
+</script>
+<script type="text/javascript">
+RED.nodes.registerType('vhv5',{
+    category: 'network',
+    defaults:{
+      name: {value:""},
+	    ipAddress: {value: "192.168.250.19"}
+    },
+    color:"rgb(160,160, 255)",
+    inputs:0,
+    outputs:3,
+    icon: "white-globe.svg",
+    label: function() {
+      return this.name||"VHV5";   //this._("comment.comment");
+    },
+    labelStyle: function() {
+      return this.name?"node_label_italic":"";
+    },
+    outputLabels: ["ReaderReport msg","sysinfo msg", "all other msgs"],
+      button: {onclick:  function() {
+            let isStart = false;
+            //TODO:  figure out how to trigger the VHV5
+            const hr = new XMLHttpRequest();
+//            hr.open("PUT", "http://192.168.250.19/api/control/trigger", true);
+//            hr.open("PUT", "http://192.168.250.19/api/control/trig_gen/1", true);
+            
+            const endpoint = isStart ? "trig_gen/1" : "trig_gen/0";
+            isStart = !isStart;
+            hr.open("PUT", "http://192.168.250.19/api/control/${endpoint}", true);
+            
+            hr.setRequestHeader("Content-Type","application/json");
+            hr.send("");
+ }
+    }
+});
+</script>
+
+
+
+
+
