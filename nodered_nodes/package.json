@@ -1,0 +1,16 @@
+{
+  "name": "node-red-contrib-omron-vhv5",
+  "version": "1.0.0",
+  "description": "A node that connects to an Omron VHV5 code reader and generates events",
+  "main": "vhv5.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "dcb",
+  "license": "ISC",
+  "node-red" : {
+    "nodes" : {
+      "VHV5" : "vhv5.js"
+    }	
+  }
+}
