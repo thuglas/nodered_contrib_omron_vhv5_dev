@@ -13,6 +13,16 @@ services:
       - "1880:1880"
     volumes:
       - node-red-data:/data
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongoadmin
+      - MONGO_INITDB_ROOT_PASSWORD=mongopass
+    volumes:
+      - mongodb-data:/data/db
 volumes:
   node-red-data:
-  
+  mongodb-data:
