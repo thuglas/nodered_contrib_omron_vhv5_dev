@@ -7,7 +7,7 @@ services:
     build: .
     container_name: node-red-doug
     #image: nodered/node-red:latest
-    entrypoint: npm node-red-doug run debug
+    #entrypoint: npm node-red-doug run debug
     environment:
       - TZ=America/Detroit
     ports:
